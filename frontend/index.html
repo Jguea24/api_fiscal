@@ -1,0 +1,779 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Predicción de Presión Fiscal</title>
+
+    <style>
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, Helvetica, sans-serif;
+        }
+
+        body {
+            min-height: 100vh;
+            background:
+                linear-gradient(
+                    135deg,
+                    #0f172a,
+                    #1e3a5f,
+                    #0f766e
+                );
+
+            color: #ffffff;
+
+            display: flex;
+            justify-content: center;
+            align-items: center;
+
+            padding: 30px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1100px;
+
+            display: grid;
+            grid-template-columns: 1fr 1.2fr;
+
+            background: rgba(255,255,255,0.10);
+
+            backdrop-filter: blur(15px);
+
+            border: 1px solid rgba(255,255,255,0.20);
+
+            border-radius: 25px;
+
+            overflow: hidden;
+
+            box-shadow:
+                0 25px 60px rgba(0,0,0,0.35);
+        }
+
+        /* =================================================
+           PANEL IZQUIERDO
+           ================================================= */
+
+        .info {
+            padding: 50px;
+
+            background:
+                linear-gradient(
+                    160deg,
+                    rgba(15,118,110,0.90),
+                    rgba(30,58,95,0.90)
+                );
+        }
+
+        .logo {
+            width: 70px;
+            height: 70px;
+
+            background: #ffffff;
+
+            color: #0f766e;
+
+            border-radius: 20px;
+
+            display: flex;
+            justify-content: center;
+            align-items: center;
+
+            font-size: 30px;
+            font-weight: bold;
+
+            margin-bottom: 30px;
+        }
+
+        .info h1 {
+            font-size: 38px;
+
+            line-height: 1.15;
+
+            margin-bottom: 20px;
+        }
+
+        .info p {
+            color: #dbeafe;
+
+            line-height: 1.7;
+
+            margin-bottom: 30px;
+        }
+
+        .feature {
+            display: flex;
+
+            gap: 15px;
+
+            margin-bottom: 20px;
+        }
+
+        .feature-icon {
+            width: 42px;
+            height: 42px;
+
+            background: rgba(255,255,255,0.15);
+
+            border-radius: 12px;
+
+            display: flex;
+            justify-content: center;
+            align-items: center;
+
+            font-size: 20px;
+        }
+
+        .feature strong {
+            display: block;
+
+            margin-bottom: 5px;
+        }
+
+        .feature span {
+            font-size: 13px;
+
+            color: #cbd5e1;
+        }
+
+        /* =================================================
+           PANEL DERECHO
+           ================================================= */
+
+        .form-container {
+            background: #ffffff;
+
+            color: #1e293b;
+
+            padding: 45px;
+        }
+
+        .form-container h2 {
+            font-size: 28px;
+
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            color: #64748b;
+
+            margin-bottom: 30px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+
+            font-weight: bold;
+
+            margin-bottom: 8px;
+
+            color: #334155;
+        }
+
+        input,
+        select {
+
+            width: 100%;
+
+            padding: 14px 16px;
+
+            border: 1px solid #cbd5e1;
+
+            border-radius: 12px;
+
+            font-size: 15px;
+
+            outline: none;
+
+            transition: 0.3s;
+        }
+
+        input:focus,
+        select:focus {
+
+            border-color: #0f766e;
+
+            box-shadow:
+                0 0 0 3px rgba(15,118,110,0.12);
+        }
+
+        button {
+
+            width: 100%;
+
+            padding: 15px;
+
+            border: none;
+
+            border-radius: 12px;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #0f766e,
+                    #0e7490
+                );
+
+            color: white;
+
+            font-size: 16px;
+
+            font-weight: bold;
+
+            cursor: pointer;
+
+            transition: 0.3s;
+
+            margin-top: 5px;
+        }
+
+        button:hover {
+
+            transform: translateY(-2px);
+
+            box-shadow:
+                0 10px 25px rgba(15,118,110,0.30);
+        }
+
+        button:disabled {
+
+            opacity: 0.6;
+
+            cursor: wait;
+
+        }
+
+        /* =================================================
+           RESULTADO
+           ================================================= */
+
+        .resultado {
+
+            margin-top: 30px;
+
+            padding: 25px;
+
+            border-radius: 18px;
+
+            background: #f0fdfa;
+
+            border: 1px solid #99f6e4;
+
+            display: none;
+
+            text-align: center;
+        }
+
+        .resultado.visible {
+            display: block;
+        }
+
+        .resultado-title {
+
+            color: #64748b;
+
+            font-size: 14px;
+
+            margin-bottom: 8px;
+        }
+
+        .resultado-valor {
+
+            font-size: 42px;
+
+            font-weight: bold;
+
+            color: #0f766e;
+
+            margin-bottom: 8px;
+        }
+
+        .resultado-detalle {
+
+            color: #475569;
+
+            font-size: 14px;
+
+            line-height: 1.6;
+        }
+
+        .error {
+
+            background: #fef2f2;
+
+            border-color: #fecaca;
+
+            color: #b91c1c;
+        }
+
+        /* =================================================
+           RESPONSIVE
+           ================================================= */
+
+        @media (max-width: 800px) {
+
+            .container {
+
+                grid-template-columns: 1fr;
+
+            }
+
+            .info {
+
+                padding: 35px;
+
+            }
+
+            .info h1 {
+
+                font-size: 30px;
+
+            }
+
+            .form-container {
+
+                padding: 35px;
+
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+<div class="container">
+
+
+    <!-- =================================================
+         INFORMACIÓN DEL PROYECTO
+         ================================================= -->
+
+    <section class="info">
+
+        <div class="logo">
+            RF
+        </div>
+
+        <h1>
+            Predicción de
+            Presión Fiscal
+        </h1>
+
+        <p>
+            Sistema de predicción desarrollado mediante
+            técnicas de Minería de Datos y aprendizaje
+            automático utilizando un modelo Random Forest.
+        </p>
+
+
+        <div class="feature">
+
+            <div class="feature-icon">
+                📊
+            </div>
+
+            <div>
+
+                <strong>
+                    Análisis de datos
+                </strong>
+
+                <span>
+                    Información histórica de presión fiscal.
+                </span>
+
+            </div>
+
+        </div>
+
+
+        <div class="feature">
+
+            <div class="feature-icon">
+                🤖
+            </div>
+
+            <div>
+
+                <strong>
+                    Machine Learning
+                </strong>
+
+                <span>
+                    Modelo Random Forest entrenado con
+                    datos históricos.
+                </span>
+
+            </div>
+
+        </div>
+
+
+        <div class="feature">
+
+            <div class="feature-icon">
+                ⚡
+            </div>
+
+            <div>
+
+                <strong>
+                    Predicción
+                </strong>
+
+                <span>
+                    Obtención inmediata de una estimación.
+                </span>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- =================================================
+         FORMULARIO
+         ================================================= -->
+
+    <section class="form-container">
+
+        <h2>
+            Realizar predicción
+        </h2>
+
+        <p class="subtitle">
+            Ingrese los parámetros del escenario a evaluar.
+        </p>
+
+
+        <form id="predictionForm">
+
+
+            <div class="form-group">
+
+                <label for="region">
+                    Región
+                </label>
+
+                <select id="region" required>
+
+                    <option value="">
+                        Seleccione una región
+                    </option>
+
+                    <option value="América">
+                        América
+                    </option>
+
+                    <option value="Europa">
+                        Europa
+                    </option>
+
+                </select>
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label for="pais">
+                    País
+                </label>
+
+                <input
+                    type="text"
+                    id="pais"
+                    placeholder="Ej. Ecuador"
+                    required
+                >
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label for="anio">
+                    Año
+                </label>
+
+                <input
+                    type="number"
+                    id="anio"
+                    min="2004"
+                    max="2100"
+                    value="2024"
+                    required
+                >
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label for="tipo_presion">
+                    Tipo de presión
+                </label>
+
+                <select id="tipo_presion" required>
+
+                    <option value="">
+                        Seleccione el tipo
+                    </option>
+
+                    <option value="Presión Fiscal">
+                        Presión Fiscal
+                    </option>
+
+                    <option value="Presión Tributaria Gobierno Central">
+                        Presión Tributaria Gobierno Central
+                    </option>
+
+                    <option value="Presión Tributaria Gobierno Subnacional">
+                        Presión Tributaria Gobierno Subnacional
+                    </option>
+
+                    <option value="Contribuciones a la Seguridad Social">
+                        Contribuciones a la Seguridad Social
+                    </option>
+
+                </select>
+
+            </div>
+
+
+            <button
+                type="submit"
+                id="btnPredecir">
+
+                🔮 Realizar predicción
+
+            </button>
+
+
+        </form>
+
+
+        <!-- =================================================
+             RESULTADO
+             ================================================= -->
+
+        <div
+            class="resultado"
+            id="resultado">
+
+            <div class="resultado-title">
+                Presión fiscal estimada
+            </div>
+
+            <div
+                class="resultado-valor"
+                id="valorPrediccion">
+
+                --
+
+            </div>
+
+            <div
+                class="resultado-detalle"
+                id="detallePrediccion">
+
+            </div>
+
+        </div>
+
+
+    </section>
+
+
+</div>
+
+
+<script>
+
+
+// ==========================================================
+// CONFIGURACIÓN
+// ==========================================================
+
+const API_URL = "http://127.0.0.1:8000";
+
+
+// ==========================================================
+// FORMULARIO
+// ==========================================================
+
+document
+    .getElementById("predictionForm")
+    .addEventListener("submit", async function(event) {
+
+        event.preventDefault();
+
+
+        const boton =
+            document.getElementById("btnPredecir");
+
+        const resultado =
+            document.getElementById("resultado");
+
+
+        // --------------------------------------------------
+        // Obtener datos
+        // --------------------------------------------------
+
+        const datos = {
+
+            region:
+                document.getElementById("region").value,
+
+            pais:
+                document.getElementById("pais").value,
+
+            anio:
+                Number(
+                    document.getElementById("anio").value
+                ),
+
+            tipo_presion:
+                document.getElementById("tipo_presion").value
+
+        };
+
+
+        // --------------------------------------------------
+        // Estado de carga
+        // --------------------------------------------------
+
+        boton.disabled = true;
+
+        boton.textContent =
+            "⏳ Procesando predicción...";
+
+
+        resultado.classList.remove("visible");
+
+
+        try {
+
+
+            // ------------------------------------------------
+            // Enviar solicitud a FastAPI
+            // ------------------------------------------------
+
+            const respuesta = await fetch(
+                `${API_URL}/predict`,
+                {
+
+                    method: "POST",
+
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+
+                    body: JSON.stringify(datos)
+
+                }
+            );
+
+
+            if (!respuesta.ok) {
+
+                throw new Error(
+                    "No fue posible realizar la predicción."
+                );
+
+            }
+
+
+            const data =
+                await respuesta.json();
+
+
+            // ------------------------------------------------
+            // Mostrar resultado
+            // ------------------------------------------------
+
+            document
+                .getElementById("valorPrediccion")
+                .textContent =
+                `${data.porcentaje}%`;
+
+
+            document
+                .getElementById("detallePrediccion")
+                .innerHTML =
+
+                `
+                <strong>${data.datos.pais}</strong>
+                —
+                ${data.datos.anio}
+                <br>
+
+                ${data.datos.tipo_presion}
+                `;
+
+
+            resultado
+                .classList
+                .add("visible");
+
+
+        }
+        catch(error) {
+
+
+            resultado.classList.add("visible");
+
+            resultado.classList.add("error");
+
+
+            document
+                .getElementById("valorPrediccion")
+                .textContent =
+                "Error";
+
+
+            document
+                .getElementById("detallePrediccion")
+                .textContent =
+                error.message;
+
+
+        }
+        finally {
+
+
+            boton.disabled = false;
+
+            boton.textContent =
+                "🔮 Realizar predicción";
+
+        }
+
+    });
+
+
+</script>
+
+
+</body>
+
+</html>
